@@ -14,6 +14,8 @@ This is for the public app in php.
       /your_proj/oauth.php
       
 3. At third if you are getting some error that missing_URI or whitespace in uri on installetion of public app for shopify then you
-   have to commit you conf.php file and just add there a single line for that.
+   have to commit your conf.php file and just add there a single line for that.
+
+      /your_proj/conf.php
    
       define('REDIRECT_URI', 'http://yourdomain.com/your_project/oauth.php');
