@@ -8,23 +8,19 @@
 	{
 		return "http://$shop/admin/api/auth?api_key=$api_key";
 	}
-
-	function is_valid_request_hmac($query_params, $shared_secret)
-	{
-		if (!isset($query_params['timestamp'])) return false;
-		$seconds_in_a_day = 24 * 60 * 60;
-		$older_than_a_day = $query_params['timestamp'] < (time() - $seconds_in_a_day);
-		if ($older_than_a_day) return false;
-
-		$hmac = $query_params['hmac'];
-		unset($query_params['signature'], $query_params['hmac']);
-
-		foreach ($query_params as $key=>$val) $params[] = "$key=$val";
-		sort($params);
-
-		return (hash_hmac('sha256', implode('&', $params), $shared_secret) === $hmac);
-	}	
-
+	
+	function is_valid_request($query_params, $shared_secret) { 
+		if(!is_array($query_params)) return false; 
+		if(array_key_exists('shop',$query_params) && array_key_exists('timestamp',$query_params) && array_key_exists('hmac',$query_params)) { 
+			$hmac = $query_params['hmac']; 
+			unset($query_params['signature']); 
+			unset($query_params['hmac']); 
+			ksort($query_params); 
+			return $hmac == hash_hmac('sha256', http_build_query($query_params), $shared_secret); 
+		} 
+		return false; 
+	}
+	
 	function authorization_url($shop, $api_key, $scopes=array(), $redirect_uri='')
 	{
 		$scopes = empty($scopes) ? '' : '&scope='.implode(',', $scopes);
